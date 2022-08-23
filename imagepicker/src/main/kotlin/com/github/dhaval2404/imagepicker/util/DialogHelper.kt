@@ -6,6 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import com.github.dhaval2404.imagepicker.R
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
+import com.github.dhaval2404.imagepicker.listener.CancelListener
 import com.github.dhaval2404.imagepicker.listener.DismissListener
 import com.github.dhaval2404.imagepicker.listener.ResultListener
 
@@ -25,7 +26,8 @@ internal object DialogHelper {
     fun showChooseAppDialog(
         context: Context,
         listener: ResultListener<ImageProvider>,
-        dismissListener: DismissListener?
+        dismissListener: DismissListener?,
+        cancelListener: CancelListener?
     ) {
         val layoutInflater = LayoutInflater.from(context)
         val customView = layoutInflater.inflate(R.layout.dialog_choose_app, null)
@@ -35,9 +37,11 @@ internal object DialogHelper {
             .setView(customView)
             .setOnCancelListener {
                 listener.onResult(null)
+                cancelListener?.onCancel()
             }
             .setNegativeButton(R.string.action_cancel) { _, _ ->
                 listener.onResult(null)
+                cancelListener?.onCancel()
             }
             .setOnDismissListener {
                 dismissListener?.onDismiss()

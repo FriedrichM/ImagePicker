@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
+import com.github.dhaval2404.imagepicker.listener.CancelListener
 import com.github.dhaval2404.imagepicker.listener.DismissListener
 import com.github.dhaval2404.imagepicker.listener.ResultListener
 import com.github.dhaval2404.imagepicker.util.DialogHelper
@@ -107,6 +108,11 @@ open class ImagePicker {
          * Dialog dismiss event listener
          */
         private var dismissListener: DismissListener? = null
+
+        /**
+         * Dialog cancel event listener
+         */
+        private var cancelListener: CancelListener? = null
 
         /**
          * File Directory
@@ -248,6 +254,26 @@ open class ImagePicker {
         }
 
         /**
+         * Sets the callback that will be called when the dialog is cancel.
+         */
+        fun setCancelListener(listener: CancelListener): Builder {
+            this.cancelListener = listener
+            return this
+        }
+
+        /**
+         * Sets the callback that will be called when the dialog is cancel.
+         */
+        fun setCancelListener(listener: (() -> Unit)): Builder {
+            this.cancelListener = object : CancelListener {
+                override fun onCancel() {
+                    listener.invoke()
+                }
+            }
+            return this
+        }
+
+        /**
          * Sets the callback that will be called when the dialog is dismissed for any reason.
          */
         fun setDismissListener(listener: (() -> Unit)): Builder {
@@ -305,7 +331,8 @@ open class ImagePicker {
                             }
                         }
                     },
-                    dismissListener
+                    dismissListener,
+                    cancelListener
                 )
             } else {
                 onResult(createIntent())
@@ -327,7 +354,8 @@ open class ImagePicker {
                         }
                     }
                 },
-                dismissListener
+                dismissListener,
+                cancelListener
             )
         }
 
